@@ -2,7 +2,7 @@
 
 Modernize Android build: AGP 9, Kotlin 2.3, Java 17, ```compileSdk``` 36, ```minSdk``` 21 (Kotlin DSL; removed ```kotlin-stdlib-jdk7``` and the manifest ```package``` attribute).
 
-Update iOS podspec: version, metadata, minimum iOS 13.0 and ```EXCLUDED_ARCHS``` instead of ```VALID_ARCHS```.
+Update iOS podspec: version, metadata, minimum iOS 15.0 and ```EXCLUDED_ARCHS``` instead of ```VALID_ARCHS```.
 
 Add Swift Package Manager support for iOS (```ios/photo_gallery/Package.swift```), keeping CocoaPods compatibility.
 
