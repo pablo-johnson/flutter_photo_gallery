@@ -13,16 +13,28 @@ public class PhotoGalleryPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     if(call.method == "listAlbums") {
-      let arguments = call.arguments as! Dictionary<String, AnyObject>
+      guard let arguments = call.arguments as? Dictionary<String, AnyObject> else {
+        result(FlutterError(code: "invalid_arguments", message: "Invalid arguments for \(call.method)", details: nil))
+        return
+      }
       let mediumType = arguments["mediumType"] as? String
       let hideIfEmpty = arguments["hideIfEmpty"] as? Bool
       result(listAlbums(mediumType: mediumType, hideIfEmpty: hideIfEmpty))
     }
     else if(call.method == "listMedia") {
-      let arguments = call.arguments as! Dictionary<String, AnyObject>
-      let albumId = arguments["albumId"] as! String
+      guard let arguments = call.arguments as? Dictionary<String, AnyObject> else {
+        result(FlutterError(code: "invalid_arguments", message: "Invalid arguments for \(call.method)", details: nil))
+        return
+      }
+      guard let albumId = arguments["albumId"] as? String else {
+        result(FlutterError(code: "invalid_arguments", message: "Missing or invalid 'albumId'", details: nil))
+        return
+      }
       let mediumType = arguments["mediumType"] as? String
-      let newest = arguments["newest"] as! Bool
+      guard let newest = arguments["newest"] as? Bool else {
+        result(FlutterError(code: "invalid_arguments", message: "Missing or invalid 'newest'", details: nil))
+        return
+      }
       let skip = arguments["skip"] as? NSNumber
       let take = arguments["take"] as? NSNumber
       let lightWeight = arguments["lightWeight"] as? Bool
@@ -36,8 +48,14 @@ public class PhotoGalleryPlugin: NSObject, FlutterPlugin {
       ))
     }
     else if(call.method == "getMedium") {
-      let arguments = call.arguments as! Dictionary<String, AnyObject>
-      let mediumId = arguments["mediumId"] as! String
+      guard let arguments = call.arguments as? Dictionary<String, AnyObject> else {
+        result(FlutterError(code: "invalid_arguments", message: "Invalid arguments for \(call.method)", details: nil))
+        return
+      }
+      guard let mediumId = arguments["mediumId"] as? String else {
+        result(FlutterError(code: "invalid_arguments", message: "Missing or invalid 'mediumId'", details: nil))
+        return
+      }
       do {
         let medium = try getMedium(mediumId: mediumId)
         result(medium)
@@ -46,8 +64,14 @@ public class PhotoGalleryPlugin: NSObject, FlutterPlugin {
       }
     }
     else if(call.method == "getThumbnail") {
-      let arguments = call.arguments as! Dictionary<String, AnyObject>
-      let mediumId = arguments["mediumId"] as! String
+      guard let arguments = call.arguments as? Dictionary<String, AnyObject> else {
+        result(FlutterError(code: "invalid_arguments", message: "Invalid arguments for \(call.method)", details: nil))
+        return
+      }
+      guard let mediumId = arguments["mediumId"] as? String else {
+        result(FlutterError(code: "invalid_arguments", message: "Missing or invalid 'mediumId'", details: nil))
+        return
+      }
       let width = arguments["width"] as? NSNumber
       let height = arguments["height"] as? NSNumber
       let highQuality = arguments["highQuality"] as? Bool
@@ -62,10 +86,19 @@ public class PhotoGalleryPlugin: NSObject, FlutterPlugin {
       )
     }
     else if(call.method == "getAlbumThumbnail") {
-      let arguments = call.arguments as! Dictionary<String, AnyObject>
-      let albumId = arguments["albumId"] as! String
+      guard let arguments = call.arguments as? Dictionary<String, AnyObject> else {
+        result(FlutterError(code: "invalid_arguments", message: "Invalid arguments for \(call.method)", details: nil))
+        return
+      }
+      guard let albumId = arguments["albumId"] as? String else {
+        result(FlutterError(code: "invalid_arguments", message: "Missing or invalid 'albumId'", details: nil))
+        return
+      }
       let mediumType = arguments["mediumType"] as? String
-      let newest = arguments["newest"] as! Bool
+      guard let newest = arguments["newest"] as? Bool else {
+        result(FlutterError(code: "invalid_arguments", message: "Missing or invalid 'newest'", details: nil))
+        return
+      }
       let width = arguments["width"] as? Int
       let height = arguments["height"] as? Int
       let highQuality = arguments["highQuality"] as? Bool
@@ -82,8 +115,14 @@ public class PhotoGalleryPlugin: NSObject, FlutterPlugin {
       )
     }
     else if(call.method == "getFile") {
-      let arguments = call.arguments as! Dictionary<String, AnyObject>
-      let mediumId = arguments["mediumId"] as! String
+      guard let arguments = call.arguments as? Dictionary<String, AnyObject> else {
+        result(FlutterError(code: "invalid_arguments", message: "Invalid arguments for \(call.method)", details: nil))
+        return
+      }
+      guard let mediumId = arguments["mediumId"] as? String else {
+        result(FlutterError(code: "invalid_arguments", message: "Missing or invalid 'mediumId'", details: nil))
+        return
+      }
       let mimeType = arguments["mimeType"] as? String
       getFile(
         mediumId: mediumId,
@@ -94,8 +133,14 @@ public class PhotoGalleryPlugin: NSObject, FlutterPlugin {
       )
     }
     else if(call.method == "deleteMedium") {
-      let arguments = call.arguments as! Dictionary<String, AnyObject>
-      let mediumId = arguments["mediumId"] as! String
+      guard let arguments = call.arguments as? Dictionary<String, AnyObject> else {
+        result(FlutterError(code: "invalid_arguments", message: "Invalid arguments for \(call.method)", details: nil))
+        return
+      }
+      guard let mediumId = arguments["mediumId"] as? String else {
+        result(FlutterError(code: "invalid_arguments", message: "Missing or invalid 'mediumId'", details: nil))
+        return
+      }
       deleteMedium(
         mediumId: mediumId,
         completion: { (success: Bool, error: Error?) -> Void in
@@ -414,7 +459,12 @@ public class PhotoGalleryPlugin: NSObject, FlutterPlugin {
               }
               let fileExt = self.extractFileExtensionFromUTI(uti: assetUTI)
               let filepath = self.exportPathForAsset(asset: asset, ext: fileExt)
-              try! imageData.write(to: filepath, options: .atomic)
+              do {
+                try imageData.write(to: filepath, options: .atomic)
+              } catch {
+                completion(nil, NSError(domain: "photo_gallery", code: 500, userInfo: nil))
+                return
+              }
               completion(filepath.absoluteString, nil)
             })
           }
@@ -435,7 +485,7 @@ public class PhotoGalleryPlugin: NSObject, FlutterPlugin {
                 let data = try Data(contentsOf: avAsset!.url)
                 let fileExt = self.extractFileExtensionFromAsset(asset: asset)
                 let filepath = self.exportPathForAsset(asset: asset, ext: fileExt)
-                try! data.write(to: filepath, options: .atomic)
+                try data.write(to: filepath, options: .atomic)
                 completion(filepath.absoluteString, nil)
               } catch {
                 completion(nil, NSError(domain: "photo_gallery", code: 500, userInfo: nil))
@@ -451,12 +501,20 @@ public class PhotoGalleryPlugin: NSObject, FlutterPlugin {
     if mimeType == "image/jpeg" {
       let filepath = self.exportPathForAsset(asset: asset, ext: ".jpeg")
       let uiImage = UIImage(data: data)
-      try! uiImage?.jpegData(compressionQuality: 100)?.write(to: filepath, options: .atomic)
+      do {
+        try uiImage?.jpegData(compressionQuality: 100)?.write(to: filepath, options: .atomic)
+      } catch {
+        return nil
+      }
       return filepath.absoluteString
     } else if mimeType == "image/png" {
       let filepath = self.exportPathForAsset(asset: asset, ext: ".png")
       let uiImage = UIImage(data: data)
-      try! uiImage?.pngData()?.write(to: filepath, options: .atomic)
+      do {
+        try uiImage?.pngData()?.write(to: filepath, options: .atomic)
+      } catch {
+        return nil
+      }
       return filepath.absoluteString
     } else {
       return nil
