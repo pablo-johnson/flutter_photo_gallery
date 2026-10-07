@@ -13,7 +13,7 @@ A Flutter plugin that retrieves images and videos from mobile native gallery.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'photo_gallery' => 'https://github.com/Firelands128/photo_gallery' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'photo_gallery/Sources/photo_gallery/**/*'
   s.dependency 'Flutter'
   s.platform = :ios, '13.0'
 

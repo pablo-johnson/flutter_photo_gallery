@@ -4,6 +4,8 @@ Modernize Android build: AGP 9, Kotlin 2.3, Java 17, ```compileSdk``` 36, ```min
 
 Update iOS podspec: version, metadata, minimum iOS 13.0 and ```EXCLUDED_ARCHS``` instead of ```VALID_ARCHS```.
 
+Add Swift Package Manager support for iOS (```ios/photo_gallery/Package.swift```), keeping CocoaPods compatibility.
+
 Update example app: new Android Gradle skeleton, ```permission_handler``` 12, ```video_player``` 2.14.
 
 ## 2.2.1
