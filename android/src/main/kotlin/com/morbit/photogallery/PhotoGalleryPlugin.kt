@@ -114,14 +114,22 @@ class PhotoGalleryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         this.activity = null
     }
 
+    private fun submitResult(result: Result, block: () -> Any?) {
+        executor.submit {
+            try {
+                result.success(block())
+            } catch (e: Exception) {
+                result.error("unexpected_error", e.message, null)
+            }
+        }
+    }
+
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "listAlbums" -> {
                 val mediumType = call.argument<String>("mediumType")
-                executor.submit {
-                    result.success(
-                        listAlbums(mediumType)
-                    )
+                submitResult(result) {
+                    listAlbums(mediumType)
                 }
             }
 
@@ -132,20 +140,24 @@ class PhotoGalleryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 val skip = call.argument<Int>("skip")
                 val take = call.argument<Int>("take")
                 val lightWeight = call.argument<Boolean>("lightWeight")
-                executor.submit {
-                    result.success(
-                        listMedia(mediumType, albumId!!, newest!!, skip, take, lightWeight)
-                    )
+                if (albumId == null || newest == null) {
+                    result.error("invalid_arguments", "albumId and newest are required", null)
+                    return
+                }
+                submitResult(result) {
+                    listMedia(mediumType, albumId, newest, skip, take, lightWeight)
                 }
             }
 
             "getMedium" -> {
                 val mediumId = call.argument<String>("mediumId")
                 val mediumType = call.argument<String>("mediumType")
-                executor.submit {
-                    result.success(
-                        getMedium(mediumId!!, mediumType)
-                    )
+                if (mediumId == null) {
+                    result.error("invalid_arguments", "mediumId is required", null)
+                    return
+                }
+                submitResult(result) {
+                    getMedium(mediumId, mediumType)
                 }
             }
 
@@ -155,10 +167,12 @@ class PhotoGalleryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 val width = call.argument<Int>("width")
                 val height = call.argument<Int>("height")
                 val highQuality = call.argument<Boolean>("highQuality")
-                executor.submit {
-                    result.success(
-                        getThumbnail(mediumId!!, mediumType, width, height, highQuality)
-                    )
+                if (mediumId == null) {
+                    result.error("invalid_arguments", "mediumId is required", null)
+                    return
+                }
+                submitResult(result) {
+                    getThumbnail(mediumId, mediumType, width, height, highQuality)
                 }
             }
 
@@ -169,10 +183,12 @@ class PhotoGalleryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 val width = call.argument<Int>("width")
                 val height = call.argument<Int>("height")
                 val highQuality = call.argument<Boolean>("highQuality")
-                executor.submit {
-                    result.success(
-                        getAlbumThumbnail(albumId!!, mediumType, newest!!, width, height, highQuality)
-                    )
+                if (albumId == null || newest == null) {
+                    result.error("invalid_arguments", "albumId and newest are required", null)
+                    return
+                }
+                submitResult(result) {
+                    getAlbumThumbnail(albumId, mediumType, newest, width, height, highQuality)
                 }
             }
 
@@ -180,28 +196,30 @@ class PhotoGalleryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 val mediumId = call.argument<String>("mediumId")
                 val mediumType = call.argument<String>("mediumType")
                 val mimeType = call.argument<String>("mimeType")
-                executor.submit {
-                    result.success(
-                        getFile(mediumId!!, mediumType, mimeType)
-                    )
+                if (mediumId == null) {
+                    result.error("invalid_arguments", "mediumId is required", null)
+                    return
+                }
+                submitResult(result) {
+                    getFile(mediumId, mediumType, mimeType)
                 }
             }
 
             "deleteMedium" -> {
                 val mediumId = call.argument<String>("mediumId")
                 val mediumType = call.argument<String>("mediumType")
-                executor.submit {
-                    result.success(
-                        deleteMedium(mediumId!!, mediumType)
-                    )
+                if (mediumId == null) {
+                    result.error("invalid_arguments", "mediumId is required", null)
+                    return
+                }
+                submitResult(result) {
+                    deleteMedium(mediumId, mediumType)
                 }
             }
 
             "cleanCache" -> {
-                executor.submit {
-                    result.success(
-                        cleanCache()
-                    )
+                submitResult(result) {
+                    cleanCache()
                 }
             }
 
@@ -711,13 +729,17 @@ class PhotoGalleryPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             }
 
             if (imageId != null && videoId != null) {
-                if (newest && imageDateAdded!! > videoDateAdded!! || !newest && imageDateAdded!! < videoDateAdded!!) {
+                val imageAdded = imageDateAdded ?: 0L
+                val videoAdded = videoDateAdded ?: 0L
+                val imageModified = imageDateModified ?: 0L
+                val videoModified = videoDateModified ?: 0L
+                if (newest && imageAdded > videoAdded || !newest && imageAdded < videoAdded) {
                     return@run getImageThumbnail(imageId.toString(), width, height, highQuality)
                 }
-                if (newest && imageDateAdded!! < videoDateAdded!! || !newest && imageDateAdded!! > videoDateAdded!!) {
+                if (newest && imageAdded < videoAdded || !newest && imageAdded > videoAdded) {
                     return@run getVideoThumbnail(videoId.toString(), width, height, highQuality)
                 }
-                if (newest && imageDateModified!! >= videoDateModified!! || !newest && imageDateModified!! <= videoDateModified!!) {
+                if (newest && imageModified >= videoModified || !newest && imageModified <= videoModified) {
                     return@run getImageThumbnail(imageId.toString(), width, height, highQuality)
                 }
                 return@run getVideoThumbnail(videoId.toString(), width, height, highQuality)
