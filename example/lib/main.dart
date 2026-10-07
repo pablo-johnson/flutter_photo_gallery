@@ -8,13 +8,16 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:video_player/video_player.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 /// The main widget of example app
 class MyApp extends StatefulWidget {
+  /// The constructor of MyApp
+  const MyApp({super.key});
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -153,10 +156,10 @@ class AlbumPage extends StatefulWidget {
   final Album album;
 
   /// The constructor of AlbumPage
-  AlbumPage(Album album) : album = album;
+  const AlbumPage(this.album, {super.key});
 
   @override
-  State<StatefulWidget> createState() => _AlbumPageState();
+  State<AlbumPage> createState() => _AlbumPageState();
 }
 
 class _AlbumPageState extends State<AlbumPage> {
@@ -223,7 +226,7 @@ class ViewerPage extends StatelessWidget {
   final Medium medium;
 
   /// The constructor of ViewerPage
-  ViewerPage(Medium medium) : medium = medium;
+  const ViewerPage(this.medium, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -266,11 +269,12 @@ class VideoProvider extends StatefulWidget {
 
   /// The constructor of VideoProvider
   const VideoProvider({
+    super.key,
     required this.mediumId,
   });
 
   @override
-  _VideoProviderState createState() => _VideoProviderState();
+  State<VideoProvider> createState() => _VideoProviderState();
 }
 
 class _VideoProviderState extends State<VideoProvider> {
@@ -294,7 +298,7 @@ class _VideoProviderState extends State<VideoProvider> {
         setState(() {});
       });
     } catch (e) {
-      print("Failed : $e");
+      debugPrint("Failed : $e");
     }
   }
 
