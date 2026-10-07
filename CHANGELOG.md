@@ -1,4 +1,12 @@
-# 2.2.1
+## Unreleased
+
+Modernize Android build: AGP 9, Kotlin 2.3, Java 17, ```compileSdk``` 36, ```minSdk``` 21 (Kotlin DSL; removed ```kotlin-stdlib-jdk7``` and the manifest ```package``` attribute).
+
+Update iOS podspec: version, metadata, minimum iOS 13.0 and ```EXCLUDED_ARCHS``` instead of ```VALID_ARCHS```.
+
+Update example app: new Android Gradle skeleton, ```permission_handler``` 12, ```video_player``` 2.14.
+
+## 2.2.1
 
 Upgrade ```flutter_lints``` dependency, and then lint code according to the ```public_member_api_docs``` and ```use_string_in_part_of_directives``` rule.
 
