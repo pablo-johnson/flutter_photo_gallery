@@ -15,7 +15,7 @@ A Flutter plugin that retrieves images and videos from mobile native gallery.
   s.source           = { :path => '.' }
   s.source_files = 'photo_gallery/Sources/photo_gallery/**/*'
   s.dependency 'Flutter'
-  s.platform = :ios, '13.0'
+  s.platform = :ios, '15.0'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
