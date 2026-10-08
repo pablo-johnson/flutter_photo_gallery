@@ -6,7 +6,19 @@ Update iOS podspec: version, metadata, minimum iOS 15.0 and ```EXCLUDED_ARCHS```
 
 Add Swift Package Manager support for iOS (```ios/photo_gallery/Package.swift```), keeping CocoaPods compatibility.
 
-Update example app: new Android Gradle skeleton, ```permission_handler``` 12, ```video_player``` 2.14.
+Update example app: new Android Gradle skeleton, ```permission_handler``` 12, ```video_player``` 2.14, and fix its lint warnings.
+
+Upgrade ```flutter_lints``` to ^6.0.0 and fix the ```public_member_api_docs``` rule configuration in ```analysis_options.yaml``` so it is actually enforced.
+
+Add a CI workflow that runs ```flutter analyze``` and ```flutter test```.
+
+## 2.2.2
+
+Fix Android namespace issue.
+
+Fix Flutter 3.29 deprecations.
+
+Fix iOS 18 issue.
 
 ## 2.2.1
 

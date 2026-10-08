@@ -4,6 +4,11 @@
 
 A Flutter plugin that retrieves images and videos from mobile native gallery.
 
+## Requirements
+
+- iOS 15.0 or later (supports both Swift Package Manager and CocoaPods)
+- Android `minSdk` 21 or later
+
 ## Installation
 
 First, add photo_gallery as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/packages-and-plugins/using-packages).
