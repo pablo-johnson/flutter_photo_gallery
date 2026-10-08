@@ -1,4 +1,6 @@
-## Unreleased
+## 3.0.0
+
+**Breaking**: minimum iOS version is now 15.0 and Android ```minSdk``` is 21; the plugin now builds with Java 17.
 
 Modernize Android build: AGP 9, Kotlin 2.3, Java 17, ```compileSdk``` 36, ```minSdk``` 21 (Kotlin DSL; removed ```kotlin-stdlib-jdk7``` and the manifest ```package``` attribute).
 
